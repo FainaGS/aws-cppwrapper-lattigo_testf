@@ -335,3 +335,46 @@ func lattigo_unmarshalBinarySwitchingKey(buf *C.char, len uint64) Handle9 {
 	}
 	return marshal.CrossLangObjMap.Add(unsafe.Pointer(switchingKey))
 }
+
+//export lattigo_marshalBinaryBootstrappingKey
+func lattigo_marshalBinaryBootstrappingKey(btKeyHandle Handle9, callback C.streamWriter, stream *C.void, stream1 *C.void, stream2 *C.void, stream3 *C.void) {
+	var btKey *bootstrapping.EvaluationKeys
+	btKey = getStoredBootstrappingKey(btKeyHandle)
+
+	data, err := btKey.EvaluationKey.Rlk.MarshalBinary()
+	if err != nil {
+		panic(err)
+	}
+
+	if len(data) > 0 {
+		C.callStreamWriter(callback, unsafe.Pointer(stream), unsafe.Pointer(&data[0]), C.uint64_t(len(data)))
+	}
+
+	var rotkeys *rlwe.RotationKeySet = btKey.EvaluationKey.Rtks
+	data1, err1 := rotkeys.MarshalBinary()
+	if err1 != nil {
+		panic(err1)
+	}
+
+	if len(data1) > 0 {
+		C.callStreamWriter(callback, unsafe.Pointer(stream1), unsafe.Pointer(&data1[0]), C.uint64_t(len(data1)))
+	}
+
+	data2, err2 := btKey.SwkDtS.MarshalBinary()
+	if err2 != nil {
+		panic(err2)
+	}
+
+	if len(data2) > 0 {
+		C.callStreamWriter(callback, unsafe.Pointer(stream2), unsafe.Pointer(&data2[0]), C.uint64_t(len(data2)))
+	}
+
+	data3, err3 := btKey.SwkStD.MarshalBinary()
+	if err3 != nil {
+		panic(err3)
+	}
+	if len(data3) > 0 {
+		C.callStreamWriter(callback, unsafe.Pointer(stream3), unsafe.Pointer(&data3[0]), C.uint64_t(len(data3)))
+	}
+
+}

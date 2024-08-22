@@ -24,6 +24,8 @@ namespace latticpp {
 
     void marshalBinarySwitchingKey(const SwitchingKey &switchingKey, std::ostream &stream);
 
+    void marshalBinaryBootstrappingKey(const BootstrappingKey &bootstrappingKey, std::ostream &stream, std::ostream &stream1, std::ostream &stream2, std::ostream &stream3);
+
 
     Ciphertext unmarshalBinaryCiphertext(std::istream &stream);
 
@@ -40,4 +42,6 @@ namespace latticpp {
     RotationKeys unmarshalBinaryRotationKeys(std::istream &stream);
 
     SwitchingKey unmarshalBinarySwitchingKey(std::istream &stream);
+
+    BootstrappingKey unmarshalBinaryBootstrappingKey(std::istream &stream, std::istream &stream1, std::istream &stream2, std::istream &stream3);
 }  // namespace latticpp

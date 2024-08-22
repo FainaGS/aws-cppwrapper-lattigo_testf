@@ -46,6 +46,11 @@ namespace latticpp {
         lattigo_marshalBinarySwitchingKey(switchingKey.getRawHandle(), &writeToStream, (void*)(&stream));
     }
 
+    void marshalBinaryBootstrappingKey(const BootstrappingKey &bootstrappingKey, std::ostream &stream, std::ostream &stream1, std::ostream &stream2, std::ostream &stream3){
+        lattigo_marshalBinaryBootstrappingKey(bootstrappingKey.getRawHandle(), &writeToStream, (void*)(&stream), (void*)(&stream1), (void*)(&stream2), (void*)(&stream3));
+    }
+
+
 
     Ciphertext unmarshalBinaryCiphertext(istream &stream) {
         // Note: the next line is a well-known hard parsing problem for C++.
@@ -90,6 +95,16 @@ namespace latticpp {
     SwitchingKey unmarshalBinarySwitchingKey(istream &stream){
         vector<char> buffer(istreambuf_iterator<char>{stream}, {});
         return SwitchingKey(lattigo_unmarshalBinarySwitchingKey(buffer.data(), buffer.size()));
+    }
+
+    BootstrappingKey unmarshalBinaryBootstrappingKey(istream &stream, istream &stream1, istream &stream2, istream &stream3){
+        RelinearizationKey relinKey = unmarshalBinaryRelinearizationKey(stream);
+        RotationKeys rotKeys = unmarshalBinaryRotationKeys(stream1);
+        SwitchingKey swkDtS = unmarshalBinarySwitchingKey(stream2);
+        SwitchingKey swkStD = unmarshalBinarySwitchingKey(stream3); 
+        return BootstrappingKey(lattigo_genBootstrappingKeyByParams(relinKey.getRawHandle(), 
+                                rotKeys.getRawHandle(),swkDtS.getRawHandle() , swkStD.getRawHandle()));
+    
     }
 
     
